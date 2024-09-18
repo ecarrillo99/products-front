@@ -4,16 +4,18 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { ProductListComponent } from './views/product-list/product-list.component';
 import { AppLayoutModule } from './layout/app.layout.module';
+import { CrudModule } from './components/crud/crud.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ProductListComponent
+    ProductListComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    AppLayoutModule
+    AppLayoutModule,
+    CrudModule
   ],
   providers: [],
   bootstrap: [AppComponent]

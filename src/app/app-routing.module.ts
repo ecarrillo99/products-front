@@ -8,7 +8,8 @@ const routes: Routes = [
   { 
     path: '', component:  AppLayoutComponent,
     children:[
-      {path: '', component:  CrudComponent}
+      {path: '', component:  CrudComponent},
+      {path: 'inventario', component:  CrudComponent}
     ]
   },
 ];

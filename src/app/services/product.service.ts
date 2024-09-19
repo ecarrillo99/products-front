@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { Product } from '../models/product';
 import { Config } from '../global/config';
 import { Service } from './service'; // Ajusta la ruta según tu estructura de carpetas
-import { PageList } from '../global/utils/pageList';
+import { PageList } from '../models/global/pageList';
 
 @Injectable()
 export class ProductService extends Service {

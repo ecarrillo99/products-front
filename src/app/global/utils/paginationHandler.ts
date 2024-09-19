@@ -2,8 +2,8 @@ import { FilterHandler } from './filterHandler';
 import { LazyLoadEvent } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { BehaviorSubject } from 'rxjs';
-import { ColumnHeader } from './columnHeader';
-import { PageList } from './pageList';
+import { ColumnHeader } from '../../models/global/columnHeader';
+import { PageList } from '../../models/global/pageList';
 
 export class PaginatorHandler<T> {
   columns: ColumnHeader[] = [];

@@ -3,7 +3,7 @@ import { Product } from '../../models/product';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { ProductService } from '../../services/product.service';
-import { ColumnHeader } from 'src/app/global/utils/columnHeader';
+import { ColumnHeader } from 'src/app/models/global/columnHeader';
 import { PaginatorHandler } from 'src/app/global/utils/paginationHandler';
 import { FilterHandler } from 'src/app/global/utils/filterHandler';
 

@@ -10,45 +10,45 @@ export class ProductService {
 
     constructor(private http: HttpClient) { }
 
-    getProductsSmall() {
-        return this.http.get<any>('assets/demo/data/products-small.json')
-            .toPromise()
-            .then(res => res.data as Product[])
-            .then(data => data);
-    }
-
     async getProducts(): Promise<Product[]> {
         try {
+            const response = await firstValueFrom(
+                this.http.get<ApiResponse<Product[]>>(`${Config.URL_SERVICES}${Config.PRODUCTS}`).pipe( //Petición get para obtener listado de productos
+                    map(response => {
+                        if (response.status) {
+                            return response.data; //devuelve un listado de productos
+                        } else {
+                            console.error(`Error: ${response.message}`);
+                            return []; //Devuelve un listado vacio en caso de error
+                        }
+                    })
+                )
+            );
+            return response;
+        } catch (error) {
+            console.error('Error al obtener productos:', error);
+            return []; //Devuelve un listado vacio en caso de error
+        }
+    }
+
+    async addProduct(product: Product): Promise<Product | null> {
+        try {
           const response = await firstValueFrom(
-            this.http.get<ApiResponse<Product[]>>(`${Config.URL_SERVICES}${Config.PRODUCTS}`).pipe(
+            this.http.post<ApiResponse<Product>>(`${Config.URL_SERVICES}${Config.PRODUCTS}`, product).pipe(
               map(response => {
                 if (response.status) {
-                  return response.data;
+                  return response.data; // Devuelve el producto para añadir a la lista local
                 } else {
                   console.error(`Error: ${response.message}`);
-                  return [];
+                  return null; // Retorna null si hubo un error
                 }
               })
             )
           );
           return response;
         } catch (error) {
-          console.error('Error al obtener productos:', error);
-          return [];
+          console.error('Error al agregar el producto:', error);
+          return null;  // Retorna null si hubo un error
         }
-      }
-
-    getProductsMixed() {
-        return this.http.get<any>('assets/demo/data/products-mixed.json')
-            .toPromise()
-            .then(res => res.data as Product[])
-            .then(data => data);
-    }
-
-    getProductsWithOrdersSmall() {
-        return this.http.get<any>('assets/demo/data/products-orders-small.json')
-            .toPromise()
-            .then(res => res.data as Product[])
-            .then(data => data);
     }
 }

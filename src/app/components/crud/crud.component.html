@@ -29,10 +29,10 @@
                     <tr>
                         <th pSortableColumn="code">Código<p-sortIcon field="code"></p-sortIcon></th>
                         <th pSortableColumn="name">Nombre<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="category">Descripción<p-sortIcon field="category"></p-sortIcon></th>
+                        <th pSortableColumn="descripction">Descripción<p-sortIcon field="descripction"></p-sortIcon></th>
                         <th pSortableColumn="price">Precio<p-sortIcon field="price"></p-sortIcon></th>
-                        <th pSortableColumn="rating">Stock<p-sortIcon field="rating"></p-sortIcon></th>
-                        <th pSortableColumn="inventoryStatus">Acción</th>
+                        <th pSortableColumn="stock">Stock<p-sortIcon field="stock"></p-sortIcon></th>
+                        <th pSortableColumn="action">Acción</th>
                         <th></th>
                     </tr>
                 </ng-template>
@@ -83,8 +83,8 @@
                 </div>
                 <div class="formgrid grid">
                     <div class="field col">
-                        <label for="price">Stock</label>
-                        <p-inputNumber id="price" [(ngModel)]="product.stock"></p-inputNumber>
+                        <label for="stock">Stock</label>
+                        <p-inputNumber id="stock" [(ngModel)]="product.stock"></p-inputNumber>
                     </div>
                 </div>
                 <div class="field">
@@ -99,14 +99,14 @@
             </ng-template>
         </p-dialog>
 
-        <p-dialog [(visible)]="deleteProductDialog" header="Confirm" [modal]="true" [style]="{width:'450px'}">
+        <p-dialog [(visible)]="deleteProductDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
             <div class="flex align-items-center justify-content-center">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                <span *ngIf="product">Are you sure you want to delete <b>{{product.name}}</b>?</span>
+                <span *ngIf="product">¿Estás seguro que deseas eliminar <b>{{product.name}}</b>?</span>
             </div>
             <ng-template pTemplate="footer">
                 <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
-                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Yes" (click)="confirmDelete()"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Si" (click)="confirmDelete()"></button>
             </ng-template>
         </p-dialog>
 

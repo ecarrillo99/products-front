@@ -79,9 +79,17 @@ export class CrudComponent implements OnInit {
 
     confirmDelete() {
         this.deleteProductDialog = false;
-        this.products = this.products.filter(val => val.id !== this.product.id);
-        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Deleted', life: 3000 });
-        this.product = {};
+        this.productService.deleteProduct(this.product.id!).then(resp => {
+            if (resp) {
+                this.products = this.products.filter(p => p.id !== resp); // Elimina el producto de la lista
+                this.showMessage('success', 'Producto eliminado correctamente');
+            } else {
+                this.showMessage('error', 'Error al eliminar Producto');
+            }
+        }).catch(error => {
+            this.showMessage('error', 'Error al procesar la solicitud');
+        });
+        this.product = {};//vacia el producto
     }
 
     hideDialog() {
@@ -91,26 +99,40 @@ export class CrudComponent implements OnInit {
 
     saveProduct() {
         this.submitted = true;
-        if (this.product.id) {
-            // @ts-ignore
-            this.product.inventoryStatus = this.product.inventoryStatus.value ? this.product.inventoryStatus.value : this.product.inventoryStatus;
-            this.products[this.findIndexById(this.product.id)] = this.product;
-            this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Product Updated', life: 3000 });
-        } else {
-            this.productService.addProduct(this.product).then(resp => { //Añadir nuevo producto
-                if (resp) {//Comprueba si el producto regresa lleno o vacio
-                    this.products.push(resp);
-                    this.messageService.add({ severity: 'success', summary: 'Correcto', detail: 'Producto creado', life: 3000 });
+    
+        const promise = this.product.id 
+            ? this.productService.updateProduct(this.product) // Actualizar producto
+            : this.productService.addProduct(this.product); // Añadir nuevo producto
+    
+        promise.then(resp => {
+            if (resp) {
+                if (this.product.id) {
+                    const index =  this.products.findIndex(p => p.id === resp.id);//Busca el indice del producto en la lista local
+                    if (index !== -1) {
+                        this.products[index] = resp; // Actualiza el producto en la lista
+                    }
+                    this.showMessage('success', 'Producto actualizado correctamente');
                 } else {
-                    this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Error al agregar Producto', life: 3000 });
+                    this.products.push(resp); // Agrega el nuevo producto
+                    this.showMessage('success', 'Producto creado correctamente');
                 }
-            })
-        }
-
-        this.products = [...this.products];
-        this.productDialog = false;
-        this.product = {};
+            } else {
+                this.showMessage('error', this.product.id ? 'Error al actualizar Producto' : 'Error al agregar Producto');
+            }
+        }).catch(error => {
+            this.showMessage('error', 'Error al procesar la solicitud');
+        }).finally(() => {
+            this.products = [...this.products]; // Asegura que la vista se actualice
+            this.productDialog = false; // Cierra el diálogo
+            this.product = {}; // Reinicia el producto
+        });
     }
+    
+    // Función para mostrar mensajes
+    private showMessage(severity: 'success' | 'error', detail: string) {
+        this.messageService.add({ severity, summary: severity === 'success' ? 'Correcto' : 'Error', detail, life: 3000 });
+    }
+    
 
     findIndexById(id: number): number {
         let index = -1;

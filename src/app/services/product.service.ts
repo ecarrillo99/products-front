@@ -34,7 +34,7 @@ export class ProductService {
     async addProduct(product: Product): Promise<Product | null> {
         try {
           const response = await firstValueFrom(
-            this.http.post<ApiResponse<Product>>(`${Config.URL_SERVICES}${Config.PRODUCTS}`, product).pipe(
+            this.http.post<ApiResponse<Product>>(`${Config.URL_SERVICES}${Config.PRODUCTS}`, product).pipe( //Petición post para agregar producto
               map(response => {
                 if (response.status) {
                   return response.data; // Devuelve el producto para añadir a la lista local
@@ -51,4 +51,46 @@ export class ProductService {
           return null;  // Retorna null si hubo un error
         }
     }
+
+    async updateProduct(product: Product): Promise<Product | null> {
+        try {
+            const response = await firstValueFrom(
+                this.http.put<ApiResponse<Product>>(`${Config.URL_SERVICES}${Config.PRODUCTS}${product.id}`, product).pipe( //Petición put para actualizar producto
+                    map(response => {
+                        if (response.status) {
+                            return response.data; // Devuelve solo el objeto data
+                        } else {
+                            console.error(`Error: ${response.message}`);
+                            return null; // Retorna null si hubo un error
+                        }
+                    })
+                )
+            );
+            return response;
+        } catch (error) {
+            console.error('Error al actualizar el producto:', error);
+            return null; // Retorna null si hubo un error
+        }
+    }
+
+    async deleteProduct(id: number): Promise<number | null> {
+        try {
+            const response = await firstValueFrom(
+                this.http.delete<ApiResponse<number>>(`${Config.URL_SERVICES}${Config.PRODUCTS}${id}`).pipe(//Petición delete para eliminar producto
+                    map(response => {
+                        if (response.status) {
+                            return response.data; // Devuelve el ID del producto eliminado
+                        } else {
+                            console.error(`Error: ${response.message}`);
+                            return -1 //Devuelve -1 si no se elimina
+                        }
+                    })
+                )
+            );
+            return response;
+        } catch (error) {
+            console.error('Error al eliminar el producto:', error);
+            return -1;//Devuelve -1 si no se elimina
+        }
+    }    
 }

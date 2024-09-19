@@ -3,12 +3,19 @@ import { Product } from '../../models/product';
 import { MessageService } from 'primeng/api';
 import { Table } from 'primeng/table';
 import { ProductService } from '../../services/product.service';
+import { ColumnHeader } from 'src/app/global/utils/columnHeader';
+import { PaginatorHandler } from 'src/app/global/utils/paginationHandler';
+import { FilterHandler } from 'src/app/global/utils/filterHandler';
 
 @Component({
     templateUrl: './crud.component.html',
     providers: [MessageService]
 })
 export class CrudComponent implements OnInit {
+
+    productsPageList: PaginatorHandler<Product[]>;
+
+    productsFilter: FilterHandler; 
 
     productDialog: boolean = false;
 
@@ -24,30 +31,45 @@ export class CrudComponent implements OnInit {
 
     submitted: boolean = false;
 
-    cols: any[] = [];
-
     statuses: any[] = [];
 
     rowsPerPageOptions = [5, 10, 20];
 
-    constructor(private productService: ProductService, private messageService: MessageService) { }
+    constructor(private productService: ProductService, private messageService: MessageService) {
+        this.productsPageList = new PaginatorHandler(this.getProducts.bind(this)); //Setea la respuesta del servicio a la paginación
+        this.productsFilter = new FilterHandler();
+    }
 
-    ngOnInit() {
-        this.productService.getProducts().then(data => this.products = data);
+    async ngOnInit() {
+        this.setTableColumns();
+        await this.getData();
+    }
 
-        this.cols = [
-            { field: 'product', header: 'Product' },
-            { field: 'price', header: 'Price' },
-            { field: 'category', header: 'Category' },
-            { field: 'rating', header: 'Reviews' },
-            { field: 'inventoryStatus', header: 'Status' }
+    //Función para obtener productos
+    async getProducts() {
+        return await this.productService.getProducts();
+    }
+
+    //Inicializa la paginación
+    async getData() {
+        try {
+          await this.productsPageList.init();
+        } catch (error) {
+            this.showMessage('error', 'Error al obtener datos');
+        }
+    }
+
+    setTableColumns() {
+
+        const columns: ColumnHeader[] = [
+            { field: 'id', header: 'Id', filterable: false, },
+            { field: 'name', header: 'Nombre', filterable: true },
+            { field: 'description', header: 'Descripción' },
+            { field: 'price', header: 'Precio', filterable: true },
+            { field: 'stock', header: 'Stock', filterable: true },
+            { field: '', header: 'Acciones', filterable: false },
         ];
-
-        this.statuses = [
-            { label: 'INSTOCK', value: 'instock' },
-            { label: 'LOWSTOCK', value: 'lowstock' },
-            { label: 'OUTOFSTOCK', value: 'outofstock' }
-        ];
+        this.productsPageList.setColumns(columns); //Setea las columnas al modelo
     }
 
     openNew() {
@@ -80,8 +102,9 @@ export class CrudComponent implements OnInit {
     confirmDelete() {
         this.deleteProductDialog = false;
         this.productService.deleteProduct(this.product.id!).then(resp => {
+            console.log(resp)
             if (resp) {
-                this.products = this.products.filter(p => p.id !== resp); // Elimina el producto de la lista
+                this.productsPageList.reload();
                 this.showMessage('success', 'Producto eliminado correctamente');
             } else {
                 this.showMessage('error', 'Error al eliminar Producto');
@@ -99,23 +122,20 @@ export class CrudComponent implements OnInit {
 
     saveProduct() {
         this.submitted = true;
-    
-        const promise = this.product.id 
+
+        const promise = this.product.id
             ? this.productService.updateProduct(this.product) // Actualizar producto
             : this.productService.addProduct(this.product); // Añadir nuevo producto
-    
+
         promise.then(resp => {
             if (resp) {
                 if (this.product.id) {
-                    const index =  this.products.findIndex(p => p.id === resp.id);//Busca el indice del producto en la lista local
-                    if (index !== -1) {
-                        this.products[index] = resp; // Actualiza el producto en la lista
-                    }
+                    const index = this.products.findIndex(p => p.id === resp.id);//Busca el indice del producto en la lista local
                     this.showMessage('success', 'Producto actualizado correctamente');
                 } else {
-                    this.products.push(resp); // Agrega el nuevo producto
                     this.showMessage('success', 'Producto creado correctamente');
                 }
+                this.productsPageList.reload();
             } else {
                 this.showMessage('error', this.product.id ? 'Error al actualizar Producto' : 'Error al agregar Producto');
             }
@@ -127,32 +147,10 @@ export class CrudComponent implements OnInit {
             this.product = {}; // Reinicia el producto
         });
     }
-    
+
     // Función para mostrar mensajes
     private showMessage(severity: 'success' | 'error', detail: string) {
         this.messageService.add({ severity, summary: severity === 'success' ? 'Correcto' : 'Error', detail, life: 3000 });
-    }
-    
-
-    findIndexById(id: number): number {
-        let index = -1;
-        for (let i = 0; i < this.products.length; i++) {
-            if (this.products[i].id === id) {
-                index = i;
-                break;
-            }
-        }
-
-        return index;
-    }
-
-    createId(): string {
-        let id = '';
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        for (let i = 0; i < 5; i++) {
-            id += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return id;
     }
 
     onGlobalFilter(table: Table, event: Event) {

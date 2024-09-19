@@ -35,7 +35,7 @@ import { ProductService } from 'src/app/services/product.service';
         DropdownModule,
         RadioButtonModule,
         InputNumberModule,
-        DialogModule
+        DialogModule,
     ],
     providers: [ProductService], 
     declarations: [CrudComponent]

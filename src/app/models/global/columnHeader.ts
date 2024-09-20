@@ -4,6 +4,7 @@ export interface ColumnHeader {
     sortable?: boolean;
     filterable?: boolean;
     filterMatchMode?: string;
+    type?:string;
     width?: string;
 }
   

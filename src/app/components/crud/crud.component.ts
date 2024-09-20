@@ -62,12 +62,12 @@ export class CrudComponent implements OnInit {
     setTableColumns() {
 
         const columns: ColumnHeader[] = [
-            { field: 'id', header: 'Id', filterable: false, },
-            { field: 'name', header: 'Nombre', filterable: true },
-            { field: 'description', header: 'Descripción' },
-            { field: 'price', header: 'Precio', filterable: true },
-            { field: 'stock', header: 'Stock', filterable: true },
-            { field: '', header: 'Acciones', filterable: false },
+            { field: 'id', header: 'Id', filterable: true, sortable:true, type:'text'},
+            { field: 'name', header: 'Nombre', filterable: true, sortable:true, type:'text'},
+            { field: 'description', header: 'Descripción',  },
+            { field: 'price', header: 'Precio', filterable: true, sortable:true, type:'numeric'},
+            { field: 'stock', header: 'Stock', filterable: true, sortable:true, type:'numeric' },
+            { field: '', header: 'Acciones', },
         ];
         this.productsPageList.setColumns(columns); //Setea las columnas al modelo
     }

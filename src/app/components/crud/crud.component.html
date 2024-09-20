@@ -5,37 +5,73 @@
             <p-toolbar styleClass="mb-4">
                 <ng-template pTemplate="left">
                     <div class="my-2">
-                        <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success mr-2" (click)="openNew()"></button>
+                        <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success mr-2"
+                            (click)="openNew()"></button>
                     </div>
                 </ng-template>
 
                 <ng-template pTemplate="right">
-                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import" chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
-                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help" (click)="dt.exportCSV()"></button>
+                    <p-fileUpload mode="basic" accept="image/*" [maxFileSize]="1000000" label="Import"
+                        chooseLabel="Import" class="mr-2 inline-block"></p-fileUpload>
+                    <button pButton pRipple label="Export" icon="pi pi-upload" class="p-button-help"
+                        (click)="dt.exportCSV()"></button>
                 </ng-template>
             </p-toolbar>
 
-            <p-table #dt [value]="productsPageList.page.items" responsiveLayout="scroll" [rows]="10" [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true" [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true" currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries" [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+            <p-table #dt [value]="productsPageList.page.items" responsiveLayout="scroll" [rows]="10"
+                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
+                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
+                [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Administrar Productos</h5>
                         <span class="block mt-2 md:mt-0 p-input-icon-left">
                             <i class="pi pi-search"></i>
-                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."  class="w-full sm:w-auto"/>
+                            <input pInputText type="text" (input)="onGlobalFilter(dt, $event)" placeholder="Search..."
+                                class="w-full sm:w-auto" />
                         </span>
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <th pSortableColumn="code">Código<p-sortIcon field="code"></p-sortIcon></th>
-                        <th pSortableColumn="name">Nombre<p-sortIcon field="name"></p-sortIcon></th>
-                        <th pSortableColumn="descripction">Descripción<p-sortIcon field="descripction"></p-sortIcon></th>
-                        <th pSortableColumn="price">Precio<p-sortIcon field="price"></p-sortIcon></th>
-                        <th pSortableColumn="stock">Stock<p-sortIcon field="stock"></p-sortIcon></th>
-                        <th pSortableColumn="action">Acción</th>
-                        <th></th>
+                      <ng-container *ngFor="let column of productsPageList.columns">
+                        <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
+                          {{ column.header }}
+                          <p-sortIcon [field]="column.field"></p-sortIcon>
+                        </th>
+                        <th *ngIf="!column.sortable">
+                          {{ column.header }}
+                        </th>
+                      </ng-container>
                     </tr>
-                </ng-template>
+                    <tr>
+                      <ng-container *ngFor="let column of productsPageList.columns">
+                        <th *ngIf="column.filterable">
+                          <ng-container *ngIf="column.type === 'numeric'">
+                            <p-columnFilter
+                              [type]="column.type"
+                              [field]="column.field"
+                              matchMode="between"
+                              minPlaceholder="Mínimo"
+                              maxPlaceholder="Máximo"
+                              [showMenu]="false"></p-columnFilter>
+                          </ng-container>
+                          <ng-container *ngIf="column.type !== 'numeric'">
+                            <p-columnFilter
+                              [type]="column.type!"
+                              [field]="column.field"
+                              matchMode="contains"
+                              placeholder="Buscar"
+                              [showMenu]="false"></p-columnFilter>
+                          </ng-container>
+                        </th>
+                        <th *ngIf="!column.filterable"></th>
+                      </ng-container>
+                    </tr>
+                  </ng-template>
+                  
+                  
                 <ng-template pTemplate="body" let-product>
                     <tr>
                         <td style="width:14%; min-width:10rem;"><span class="p-column-title">Código</span>
@@ -49,18 +85,21 @@
                             <span class="p-column-title">Descripción</span>
                             {{product.description}}
                         </td>
-                        <td style="width:14%; min-width:8rem;">
+                        <td style="width:20%; min-width:8rem;">
                             <span class="p-column-title">Precio</span>
                             {{product.price | currency:'USD'}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:20%; min-width:10rem;">
                             <span class="p-column-title">Stock</span>
                             {{product.stock}}
                         </td>
                         <td>
                             <div class="flex">
-                                <button pButton pRipple icon="pi pi-pencil" class="p-button-rounded p-button-success mr-2" (click)="editProduct(product)"></button>
-                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning" (click)="deleteProduct(product)"></button>
+                                <button pButton pRipple icon="pi pi-pencil"
+                                    class="p-button-rounded p-button-success mr-2"
+                                    (click)="editProduct(product)"></button>
+                                <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
+                                    (click)="deleteProduct(product)"></button>
                             </div>
                         </td>
                     </tr>
@@ -68,17 +107,20 @@
             </p-table>
         </div>
 
-        <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true" class="p-fluid">
+        <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true"
+            class="p-fluid">
             <ng-template pTemplate="content">
                 <div class="field">
                     <label for="name">Nombre</label>
-                    <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}"/>
+                    <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
                     <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Nombre es requerido.</small>
                 </div>
                 <div class="formgrid grid">
                     <div class="field col">
                         <label for="price">Precio</label>
-                        <p-inputNumber id="price" [(ngModel)]="product.price"  mode="currency" currency="USD" locale="en-US" ></p-inputNumber>
+                        <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="USD"
+                            locale="en-US"></p-inputNumber>
                     </div>
                 </div>
                 <div class="formgrid grid">
@@ -89,14 +131,19 @@
                 </div>
                 <div class="field">
                     <label for="description">Descripción</label>
-                    <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3" cols="20" autofocus [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></textarea>
-                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Desqripcion es requerida.</small>
+                    <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3"
+                        cols="20" autofocus
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></textarea>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Desqripcion es
+                        requerida.</small>
                 </div>
             </ng-template>
 
             <ng-template pTemplate="footer">
-                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text" (click)="hideDialog()"></button>
-                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text" (click)="saveProduct()"></button>
+                <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
+                    (click)="hideDialog()"></button>
+                <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
+                    (click)="saveProduct()"></button>
             </ng-template>
         </p-dialog>
 
@@ -106,8 +153,10 @@
                 <span *ngIf="product">¿Estás seguro que deseas eliminar <b>{{product.name}}</b>?</span>
             </div>
             <ng-template pTemplate="footer">
-                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No" (click)="deleteProductDialog = false"></button>
-                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Si" (click)="confirmDelete()"></button>
+                <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
+                    (click)="deleteProductDialog = false"></button>
+                <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Si"
+                    (click)="confirmDelete()"></button>
             </ng-template>
         </p-dialog>
     </div>

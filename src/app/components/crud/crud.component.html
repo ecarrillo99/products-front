@@ -18,11 +18,12 @@
                 </ng-template>
             </p-toolbar>
 
-            <p-table #dt [value]="productsPageList.page.items" responsiveLayout="scroll" [rows]="10"
-                [globalFilterFields]="['name','country.name','representative.name','status']" [paginator]="true"
-                [rowsPerPageOptions]="[10,20,30]" [showCurrentPageReport]="true"
-                currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries"
-                [(selection)]="selectedProducts" selectionMode="multiple" [rowHover]="true" dataKey="id">
+            <p-table #dt [value]="productsPageList.page.items" [(rows)]="productsPageList.rows" [lazy]="true"
+                (onLazyLoad)="productsPageList.next($event)" [lazyLoadOnInit]="false"
+                [tableStyle]="{ 'min-width': '60rem' }" [rowsPerPageOptions]="productsPageList.rowsPerPage"
+                [loading]="productsPageList.loading" [showCurrentPageReport]="true"
+                currentPageReportTemplate="Mostrando {first} al {last} de {totalRecords} elementos" [paginator]="true"
+                [first]="productsPageList.pageCount" [totalRecords]="productsPageList.page.totalItems">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Administrar Productos</h5>
@@ -35,43 +36,30 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                      <ng-container *ngFor="let column of productsPageList.columns">
-                        <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
-                          {{ column.header }}
-                          <p-sortIcon [field]="column.field"></p-sortIcon>
-                        </th>
-                        <th *ngIf="!column.sortable">
-                          {{ column.header }}
-                        </th>
-                      </ng-container>
+                        <ng-container *ngFor="let column of productsPageList.columns">
+                            <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
+                                {{ column.header }}
+                                <p-sortIcon [field]="column.field"></p-sortIcon>
+                            </th>
+                            <th *ngIf="!column.sortable">
+                                {{ column.header }}
+                            </th>
+                        </ng-container>
                     </tr>
                     <tr>
-                      <ng-container *ngFor="let column of productsPageList.columns">
-                        <th *ngIf="column.filterable">
-                          <ng-container *ngIf="column.type === 'numeric'">
-                            <p-columnFilter
-                              [type]="column.type"
-                              [field]="column.field"
-                              matchMode="between"
-                              minPlaceholder="Mínimo"
-                              maxPlaceholder="Máximo"
-                              [showMenu]="false"></p-columnFilter>
-                          </ng-container>
-                          <ng-container *ngIf="column.type !== 'numeric'">
-                            <p-columnFilter
-                              [type]="column.type!"
-                              [field]="column.field"
-                              matchMode="contains"
-                              placeholder="Buscar"
-                              [showMenu]="false"></p-columnFilter>
-                          </ng-container>
-                        </th>
-                        <th *ngIf="!column.filterable"></th>
-                      </ng-container>
+                        <ng-container *ngFor="let column of productsPageList.columns">
+                            <th *ngIf="column.filterable">
+                                <ng-container>
+                                    <p-columnFilter [type]="column.type!" [field]="column.field" matchMode="contains"
+                                        placeholder="Buscar" [showMenu]="false"></p-columnFilter>
+                                </ng-container>
+                            </th>
+                            <th *ngIf="!column.filterable"></th>
+                        </ng-container>
                     </tr>
-                  </ng-template>
-                  
-                  
+                </ng-template>
+
+
                 <ng-template pTemplate="body" let-product>
                     <tr>
                         <td style="width:14%; min-width:10rem;"><span class="p-column-title">Código</span>
@@ -85,13 +73,17 @@
                             <span class="p-column-title">Descripción</span>
                             {{product.description}}
                         </td>
-                        <td style="width:20%; min-width:8rem;">
+                        <td style="width:14%; min-width:8rem;">
                             <span class="p-column-title">Precio</span>
                             {{product.price | currency:'USD'}}
                         </td>
-                        <td style="width:20%; min-width:10rem;">
+                        <td style="width:14%; min-width:10rem;">
                             <span class="p-column-title">Stock</span>
                             {{product.stock}}
+                        </td>
+                        <td style="width:14%; min-width:10rem;">
+                            <span class="p-column-title">Bodega</span>
+                            {{product.warehouse.name}}
                         </td>
                         <td>
                             <div class="flex">
@@ -128,6 +120,12 @@
                         <label for="stock">Stock</label>
                         <p-inputNumber id="stock" [(ngModel)]="product.stock" autofocus></p-inputNumber>
                     </div>
+                </div>
+                <div class="field">
+                    <label for="warehouse">Bodega</label>
+                    <p-dropdown id="id" [options]="warehouses" [(ngModel)]="product.warehouse" optionLabel="name"
+                        placeholder="Seleccione una bodega">
+                    </p-dropdown>
                 </div>
                 <div class="field">
                     <label for="description">Descripción</label>

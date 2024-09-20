@@ -7,4 +7,8 @@ export class Config {
     static get PRODUCTS(): string {
         return "/Products/";
     }
+
+    static get WAREHOUSE(): string {
+        return "/Warehouse/";
+    }
 }

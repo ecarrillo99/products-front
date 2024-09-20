@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Product } from '../models/product';
+import { Product } from '../models/product.model';
 import { Config } from '../global/config';
 import { Service } from './service'; // Ajusta la ruta según tu estructura de carpetas
 import { PageList } from '../models/global/pageList';
@@ -11,8 +11,9 @@ export class ProductService extends Service {
         super(http);
     }
 
-    getProducts(): Promise<PageList<Product[]>> {
-        return this.request<PageList<Product[]>>('get', `${Config.URL_SERVICES}${Config.PRODUCTS}`) as Promise<PageList<Product[]>>;
+    getProducts(query:Record<string, any>): Promise<PageList<Product[]>> {
+        const queryString = new URLSearchParams(query).toString();
+        return this.request<PageList<Product[]>>('get', `${Config.URL_SERVICES}${Config.PRODUCTS}?${queryString}`) as Promise<PageList<Product[]>>;
     }
 
     addProduct(product: Product): Promise<Product | null> {

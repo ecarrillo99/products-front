@@ -17,6 +17,8 @@ import { RadioButtonModule } from 'primeng/radiobutton';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import { ProductService } from 'src/app/services/product.service';
+import { WarehouseService } from 'src/app/services/warehouse.service';
+import { UrlQueryService } from 'src/app/services/url-query.service';
 
 @NgModule({
     imports: [
@@ -37,7 +39,7 @@ import { ProductService } from 'src/app/services/product.service';
         InputNumberModule,
         DialogModule,
     ],
-    providers: [ProductService], 
+    providers: [ProductService, WarehouseService, UrlQueryService], 
     declarations: [CrudComponent]
 })
 export class CrudModule { }

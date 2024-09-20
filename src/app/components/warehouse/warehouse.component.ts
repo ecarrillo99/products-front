@@ -11,10 +11,10 @@ import { WarehouseService } from 'src/app/services/warehouse.service';
 import { UrlQueryService } from 'src/app/services/url-query.service';
 
 @Component({
-    templateUrl: './crud.component.html',
+    templateUrl: './warehouse.component.html',
     providers: [MessageService]
 })
-export class CrudComponent implements OnInit {
+export class WarehouseComponent implements OnInit {
 
     productsPageList: PaginatorHandler<Product[]>;
 

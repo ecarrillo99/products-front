@@ -23,6 +23,11 @@ export class AppMenuComponent implements OnInit {
                         icon: 'pi pi-fw pi-pencil',
                         routerLink: ['/inventario']
                     },
+                    {
+                        label: 'Bodegas',
+                        icon: 'pi pi-fw pi-pencil',
+                        routerLink: ['/bodegas']
+                    },
                 ]
             }
         ];

@@ -19,6 +19,7 @@ import { DialogModule } from 'primeng/dialog';
 import { ProductService } from 'src/app/services/product.service';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { UrlQueryService } from 'src/app/services/url-query.service';
+import { CalendarModule } from 'primeng/calendar';
 
 @NgModule({
     imports: [
@@ -35,6 +36,7 @@ import { UrlQueryService } from 'src/app/services/url-query.service';
         InputTextModule,
         InputTextareaModule,
         DropdownModule,
+        CalendarModule,
         RadioButtonModule,
         InputNumberModule,
         DialogModule,

@@ -18,12 +18,12 @@
                 </ng-template>
             </p-toolbar>
 
-            <p-table #dt [value]="productsPageList.page.items" [(rows)]="productsPageList.rows" [lazy]="true"
-                (onLazyLoad)="productsPageList.next($event)" [lazyLoadOnInit]="false"
-                [tableStyle]="{ 'min-width': '60rem' }" [rowsPerPageOptions]="productsPageList.rowsPerPage"
-                [loading]="productsPageList.loading" [showCurrentPageReport]="true"
+            <p-table #dt [value]="warehousePageList.page.items" [(rows)]="warehousePageList.rows" [lazy]="true"
+                (onLazyLoad)="warehousePageList.next($event)" [lazyLoadOnInit]="false"
+                [tableStyle]="{ 'min-width': '60rem' }" [rowsPerPageOptions]="warehousePageList.rowsPerPage"
+                [loading]="warehousePageList.loading" [showCurrentPageReport]="true"
                 currentPageReportTemplate="Mostrando {first} al {last} de {totalRecords} elementos" [paginator]="true"
-                [first]="productsPageList.pageCount" [totalRecords]="productsPageList.page.totalItems">
+                [first]="warehousePageList.pageCount" [totalRecords]="warehousePageList.page.totalItems">
                 <ng-template pTemplate="caption">
                     <div class="flex flex-column md:flex-row md:justify-content-between md:align-items-center">
                         <h5 class="m-0">Administrar Productos</h5>
@@ -36,7 +36,7 @@
                 </ng-template>
                 <ng-template pTemplate="header">
                     <tr>
-                        <ng-container *ngFor="let column of productsPageList.columns">
+                        <ng-container *ngFor="let column of warehousePageList.columns">
                             <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
                                 {{ column.header }}
                                 <p-sortIcon [field]="column.field"></p-sortIcon>
@@ -47,7 +47,7 @@
                         </ng-container>
                     </tr>
                     <tr>
-                        <ng-container *ngFor="let column of productsPageList.columns">
+                        <ng-container *ngFor="let column of warehousePageList.columns">
                             <th *ngIf="column.filterable">
                                 <ng-container>
                                     <p-columnFilter [type]="column.type!" [field]="column.field" matchMode="contains"
@@ -61,38 +61,26 @@
                 </ng-template>
 
 
-                <ng-template pTemplate="body" let-product>
+                <ng-template pTemplate="body" let-warehouse>
                     <tr>
-                        <td style="width:14%; min-width:10rem;"><span class="p-column-title">Código</span>
-                            {{product.id}}
+                        <td style="width:25%; min-width:10rem;"><span class="p-column-title">Código</span>
+                            {{warehouse.id}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">Nombre</span>
-                            {{product.name}}
+                            {{warehouse.name}}
                         </td>
-                        <td style="width:14%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;">
                             <span class="p-column-title">Descripción</span>
-                            {{product.description}}
-                        </td>
-                        <td style="width:14%; min-width:8rem;">
-                            <span class="p-column-title">Precio</span>
-                            {{product.price | currency:'USD'}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Stock</span>
-                            {{product.stock}}
-                        </td>
-                        <td style="width:14%; min-width:10rem;">
-                            <span class="p-column-title">Bodega</span>
-                            {{product.warehouse.name}}
+                            {{warehouse.description}}
                         </td>
                         <td>
                             <div class="flex">
                                 <button pButton pRipple icon="pi pi-pencil"
                                     class="p-button-rounded p-button-success mr-2"
-                                    (click)="editProduct(product)"></button>
+                                    (click)="editWarehouse(warehouse)"></button>
                                 <button pButton pRipple icon="pi pi-trash" class="p-button-rounded p-button-warning"
-                                    (click)="deleteProduct(product)"></button>
+                                    (click)="deleteWarehouse(warehouse)"></button>
                             </div>
                         </td>
                     </tr>
@@ -100,40 +88,21 @@
             </p-table>
         </div>
 
-        <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true"
+        <p-dialog [(visible)]="warehouseDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true"
             class="p-fluid">
             <ng-template pTemplate="content">
                 <div class="field">
                     <label for="name">Nombre</label>
-                    <input type="text" pInputText id="name" [(ngModel)]="product.name" required autofocus
-                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.name}" />
-                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.name">Nombre es requerido.</small>
-                </div>
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="price">Precio</label>
-                        <p-inputNumber id="price" [(ngModel)]="product.price" mode="currency" currency="USD"
-                            locale="en-US"></p-inputNumber>
-                    </div>
-                </div>
-                <div class="formgrid grid">
-                    <div class="field col">
-                        <label for="stock">Stock</label>
-                        <p-inputNumber id="stock" [(ngModel)]="product.stock" autofocus></p-inputNumber>
-                    </div>
-                </div>
-                <div class="field">
-                    <label for="warehouse">Bodega</label>
-                    <p-dropdown id="id" [options]="warehouses" [(ngModel)]="product.warehouse" optionLabel="name"
-                        placeholder="Seleccione una bodega">
-                    </p-dropdown>
+                    <input type="text" pInputText id="name" [(ngModel)]="warehouse.name" required autofocus
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !warehouse.name}" />
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !warehouse.name">Nombre es requerido.</small>
                 </div>
                 <div class="field">
                     <label for="description">Descripción</label>
-                    <textarea id="description" pInputTextarea [(ngModel)]="product.description" required rows="3"
+                    <textarea id="description" pInputTextarea [(ngModel)]="warehouse.description" required rows="3"
                         cols="20" autofocus
-                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !product.description}"></textarea>
-                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !product.description">Desqripcion es
+                        [ngClass]="{'ng-invalid ng-dirty' : submitted && !warehouse.description}"></textarea>
+                    <small class="ng-dirty ng-invalid" *ngIf="submitted && !warehouse.description">Desqripcion es
                         requerida.</small>
                 </div>
             </ng-template>
@@ -142,18 +111,18 @@
                 <button pButton pRipple label="Cancel" icon="pi pi-times" class="p-button-text"
                     (click)="hideDialog()"></button>
                 <button pButton pRipple label="Save" icon="pi pi-check" class="p-button-text"
-                    (click)="saveProduct()"></button>
+                    (click)="saveWarehouse()"></button>
             </ng-template>
         </p-dialog>
 
-        <p-dialog [(visible)]="deleteProductDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
+        <p-dialog [(visible)]="deleteWarehouseDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
             <div class="flex align-items-center justify-content-center">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>
-                <span *ngIf="product">¿Estás seguro que deseas eliminar <b>{{product.name}}</b>?</span>
+                <span *ngIf="warehouse">¿Estás seguro que deseas eliminar <b>{{warehouse.name}}</b>?</span>
             </div>
             <ng-template pTemplate="footer">
                 <button pButton pRipple icon="pi pi-times" class="p-button-text" label="No"
-                    (click)="deleteProductDialog = false"></button>
+                    (click)="deleteWarehouseDialog = false"></button>
                 <button pButton pRipple icon="pi pi-check" class="p-button-text" label="Si"
                     (click)="confirmDelete()"></button>
             </ng-template>

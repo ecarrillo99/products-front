@@ -11,8 +11,16 @@ export class WarehouseService extends Service {
         super(http);
     }
 
-    getWarehouse(): Promise<PageList<Warehouse[]>> {
-        return this.request<PageList<Warehouse[]>>('get', `${Config.URL_SERVICES}${Config.WAREHOUSE}`) as Promise<PageList<Warehouse[]>>;
+    getWarehouse(query?: Record<string, any>): Promise<PageList<Warehouse[]>> {
+        // Si el query no está definido, devuelve una cadena vacía.
+        const queryString = query ? new URLSearchParams(query).toString() : '';
+        
+        // Construye la URL con o sin el query string.
+        const url = queryString 
+            ? `${Config.URL_SERVICES}${Config.WAREHOUSE}?${queryString}`
+            : `${Config.URL_SERVICES}${Config.WAREHOUSE}`;
+    
+        return this.request<PageList<Warehouse[]>>('get', url) as Promise<PageList<Warehouse[]>>;
     }
 
     addWarehouse(product: Warehouse): Promise<Warehouse | null> {

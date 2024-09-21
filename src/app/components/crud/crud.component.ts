@@ -12,6 +12,7 @@ import { UrlQueryService } from 'src/app/services/url-query.service';
 
 @Component({
     templateUrl: './crud.component.html',
+    styleUrls: ['./crud.component.scss'],
     providers: [MessageService]
 })
 export class CrudComponent implements OnInit {
@@ -61,8 +62,18 @@ export class CrudComponent implements OnInit {
 
     //Función para obtener productos
     async getProducts(query: Record<string, any>) {
-        return await this.productService.getProducts(query);
+        // Obtiene los filtros actuales
+        const filters = this.productsFilter.getFilters();
+        console.log('Query:', query);
+        console.log('Filters:', filters);
+    
+        // Combina los filtros y la consulta
+        const combinedQuery = { ...query, ...filters };
+        console.log('Combined Query:', combinedQuery);
+    
+        return await this.productService.getProducts(combinedQuery);
     }
+    
 
     //Función para obtener bodegas
     async getWarehouses() {
@@ -87,13 +98,14 @@ export class CrudComponent implements OnInit {
     setTableColumns() {
 
         const columns: ColumnHeader[] = [
-            { field: 'id', header: 'Id', filterable: true, sortable: true, type: 'text' },
-            { field: 'Name', header: 'Nombre', filterable: true, sortable: true, type: 'text' },
-            { field: 'Description', header: 'Descripción', },
-            { field: 'Price', header: 'Precio', filterable: true, sortable: true, type: 'numeric' },
-            { field: 'Stock', header: 'Stock', filterable: true, sortable: true, type: 'numeric' },
-            { field: 'warehouse', header: 'Bodega', filterable: false, sortable: true, type: 'text' },
-            { field: '', header: 'Acciones', },
+            { field: 'Id', header: 'Id',  sortable: true, type: 'text', width:"5%" },
+            { field: 'Name', header: 'Nombre', filterable: true, sortable: true, type: 'text', width:"13%" },
+            { field: 'Description', header: 'Descripción', width:"13%"},
+            { field: 'Price', header: 'Precio', filterable: true, sortable: true, type: 'numeric', width:"13%" },
+            { field: 'Stock', header: 'Stock', filterable: true, sortable: true, type: 'numeric', width:"13%" },
+            { field: 'Created', header: 'Ingreso', filterable: true, sortable: true, type: 'date', width:"13%" },
+            { field: 'IdWarehouse', header: 'Bodega', filterable: true, sortable: true, type: 'select', width:"13%" },
+            { field: '', header: 'Acciones', width:"17%"  },
         ];
         this.productsPageList.setColumns(columns); //Setea las columnas al modelo
     }
@@ -101,7 +113,7 @@ export class CrudComponent implements OnInit {
     configureObserveFilters() {
         this.productsPageList.observeFilters().subscribe((query) => {
             this.urlQueryService.updateUrlQueryParams(query);
-            const filterParams = ['Id', 'Name', 'Price', 'Stock', 'idWarehouse', 'direccion'];
+            const filterParams = ['Id', 'Name', 'Price', 'Stock', 'IdWarehouse'];
             filterParams.forEach((key) => {
                 if (query.hasOwnProperty(key)) this.productsFilter.setFilter(key, query[key]);
             });
@@ -110,11 +122,19 @@ export class CrudComponent implements OnInit {
 
     async setDefaultFilters() {
         const defaultFilters = await this.urlQueryService.getFilterQueryParams([
-          { name: 'page', type: 'number' },
-          { name: 'pageSize', type: 'number' },
+            { name: 'page', type: 'number' },
+            { name: 'pageSize', type: 'number' },
+            { name: 'IdWarehouse', type: 'string' },
+            { name: 'Created', type: 'string' }
         ]);
+    
+        console.log('Default Filters:', defaultFilters); // Log para verificar
+    
         this.productsFilter.setFilters(defaultFilters);
-      }
+        
+        // Asegúrate de que los filtros se apliquen después de establecerlos
+        await this.getData();
+    }
 
     openNew() {
         this.product = {};
@@ -147,6 +167,16 @@ export class CrudComponent implements OnInit {
         });
         this.product = {};//vacia el producto
     }
+
+    onDateFilter(event: any) {
+        const query = {
+            // Asume que el evento contiene el valor filtrado
+            [event.field]: event.value,
+        };
+    
+        this.productsPageList.next({ filters: query }); // Asume que tienes un método para manejar la paginación y filtros
+    }
+    
 
     hideDialog() {
         this.productDialog = false;
@@ -196,9 +226,5 @@ export class CrudComponent implements OnInit {
     // Función para mostrar mensajes
     private showMessage(severity: 'success' | 'error', detail: string) {
         this.messageService.add({ severity, summary: severity === 'success' ? 'Correcto' : 'Error', detail, life: 3000 });
-    }
-
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
     }
 }

@@ -1,0 +1,11 @@
+::ng-deep .p-datepicker {
+    transform: scale(0.7); /* Escalar el popup del calendario */
+    width: 200px; /* Ancho del popup */
+    height: 350px; /* Alto del popup */
+  }
+  
+  ::ng-deep .p-datepicker-calendar {
+    width: 100%; /* Ajustar el calendario dentro del popup */
+    height: 100%;
+  }
+  

@@ -21,6 +21,11 @@ export class Service {
         url: string,
         body?: any
     ): Promise<T | null> {
+        // Verifica si hay una propiedad de fecha que necesita ser formateada
+        if (body && typeof body === 'object') {
+            this.formatDateParams(body);
+        }
+
         try {
             const response = await firstValueFrom(
                 this.getHttpMethod(method)(url, body).pipe(
@@ -43,5 +48,17 @@ export class Service {
             delete: (url: string) => this.http.delete<ApiResponse<any>>(url),
         };
         return methods[method];
+    }
+
+    // Función para formatear parámetros de fecha
+    private formatDateParams(query: Record<string, any>): void {
+        Object.keys(query).forEach(key => {
+            if (typeof query[key] === 'string') {
+                const date = new Date(query[key]);
+                if (!isNaN(date.getTime())) { // Verifica si es una fecha válida
+                    query[key] = date.toISOString().split('T')[0]; // Formato aaaa-mm-dd
+                }
+            }
+        });
     }
 }

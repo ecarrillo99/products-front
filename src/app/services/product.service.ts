@@ -11,7 +11,15 @@ export class ProductService extends Service {
         super(http);
     }
 
-    getProducts(query:Record<string, any>): Promise<PageList<Product[]>> {
+    getProducts(query: Record<string, any>): Promise<PageList<Product[]>> {
+        // Convertir la fecha a formato aaaa-mm-dd
+        if (query['Created']) {
+            const date = new Date(query['Created']);
+            const formattedDate = date.toISOString().split('T')[0]; // Esto devuelve el formato aaaa-mm-dd
+            query['Created'] = formattedDate; // Reemplaza la fecha en el objeto query
+        }
+    
+        console.log("query", query);
         const queryString = new URLSearchParams(query).toString();
         return this.request<PageList<Product[]>>('get', `${Config.URL_SERVICES}${Config.PRODUCTS}?${queryString}`) as Promise<PageList<Product[]>>;
     }

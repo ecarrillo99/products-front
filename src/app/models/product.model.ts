@@ -6,6 +6,7 @@ export interface Product {
     description?: string;
     price?:number;
     stock?: number;
+    created?: Date;
     idWarehouse?:number;
     warehouse?:Warehouse;
 }

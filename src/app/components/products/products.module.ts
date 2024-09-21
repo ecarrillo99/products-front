@@ -1,8 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { CrudRoutingModule } from './crud-routing.module';
-import { CrudComponent } from './crud.component';
+import { ProductsComponent } from './products.component';
 import { TableModule } from 'primeng/table';
 import { FileUploadModule } from 'primeng/fileupload';
 import { ButtonModule } from 'primeng/button';
@@ -20,11 +19,12 @@ import { ProductService } from 'src/app/services/product.service';
 import { WarehouseService } from 'src/app/services/warehouse.service';
 import { UrlQueryService } from 'src/app/services/url-query.service';
 import { CalendarModule } from 'primeng/calendar';
+import { ProductsRoutingModule } from './products-routing.module';
 
 @NgModule({
     imports: [
         CommonModule,
-        CrudRoutingModule,
+        ProductsRoutingModule,
         TableModule,
         FileUploadModule,
         FormsModule,
@@ -42,6 +42,6 @@ import { CalendarModule } from 'primeng/calendar';
         DialogModule,
     ],
     providers: [ProductService, WarehouseService, UrlQueryService], 
-    declarations: [CrudComponent]
+    declarations: [ProductsComponent]
 })
-export class CrudModule { }
+export class ProductsModule { }

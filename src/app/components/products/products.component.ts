@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Product } from '../../models/product.model';
 import { MessageService } from 'primeng/api';
-import { Table } from 'primeng/table';
 import { ProductService } from '../../services/product.service';
 import { ColumnHeader } from 'src/app/models/global/columnHeader';
 import { PaginatorHandler } from 'src/app/global/utils/paginationHandler';
@@ -11,11 +10,11 @@ import { WarehouseService } from 'src/app/services/warehouse.service';
 import { UrlQueryService } from 'src/app/services/url-query.service';
 
 @Component({
-    templateUrl: './crud.component.html',
-    styleUrls: ['./crud.component.scss'],
+    templateUrl: './products.component.html',
+    styleUrls: ['./products.component.scss'],
     providers: [MessageService]
 })
-export class CrudComponent implements OnInit {
+export class ProductsComponent implements OnInit {
 
     productsPageList: PaginatorHandler<Product[]>;
 
@@ -57,19 +56,15 @@ export class CrudComponent implements OnInit {
         await this.getData();
         this.configureObserveFilters();
         await this.setDefaultFilters();
-        console.log(this.warehouses);
     }
 
     //Función para obtener productos
     async getProducts(query: Record<string, any>) {
         // Obtiene los filtros actuales
         const filters = this.productsFilter.getFilters();
-        console.log('Query:', query);
-        console.log('Filters:', filters);
     
         // Combina los filtros y la consulta
         const combinedQuery = { ...query, ...filters };
-        console.log('Combined Query:', combinedQuery);
     
         return await this.productService.getProducts(combinedQuery);
     }
@@ -89,50 +84,46 @@ export class CrudComponent implements OnInit {
     async getData() {
         try {
             await this.productsPageList.init();
-            console.log(this.productsPageList)
         } catch (error) {
             this.showMessage('error', 'Error al obtener datos');
         }
     }
 
+    //Seteo de columnas, junto a propiedades de ordenamiento, filtrado, tipo y ancho
     setTableColumns() {
-
         const columns: ColumnHeader[] = [
             { field: 'Id', header: 'Id',  sortable: true, type: 'text', width:"5%" },
-            { field: 'Name', header: 'Nombre', filterable: true, sortable: true, type: 'text', width:"13%" },
-            { field: 'Description', header: 'Descripción', width:"13%"},
-            { field: 'Price', header: 'Precio', filterable: true, sortable: true, type: 'numeric', width:"13%" },
-            { field: 'Stock', header: 'Stock', filterable: true, sortable: true, type: 'numeric', width:"13%" },
-            { field: 'Created', header: 'Ingreso', filterable: true, sortable: true, type: 'date', width:"13%" },
-            { field: 'IdWarehouse', header: 'Bodega', filterable: true, sortable: true, type: 'select', width:"13%" },
+            { field: 'Name', header: 'Nombre', filterable: true,  type: 'text', width:"13%" },
+            { field: 'Description', header: 'Descripción',type: 'text', filterable: true, width:"13%"},
+            { field: 'Price', header: 'Precio', filterable: false,  type: 'numeric', width:"13%" },
+            { field: 'Stock', header: 'Stock', filterable: true,  type: 'numeric', width:"13%" },
+            { field: 'Created', header: 'Ingreso', filterable: true, type: 'date', width:"13%" },
+            { field: 'IdWarehouse', header: 'Bodega', filterable: true, type: 'select', width:"13%" },
             { field: '', header: 'Acciones', width:"17%"  },
         ];
-        this.productsPageList.setColumns(columns); //Setea las columnas al modelo
+        this.productsPageList.setColumns(columns); 
     }
 
+    //Configuracion de filtros en Url
     configureObserveFilters() {
         this.productsPageList.observeFilters().subscribe((query) => {
             this.urlQueryService.updateUrlQueryParams(query);
-            const filterParams = ['Id', 'Name', 'Price', 'Stock', 'IdWarehouse'];
-            filterParams.forEach((key) => {
-                if (query.hasOwnProperty(key)) this.productsFilter.setFilter(key, query[key]);
-            });
         });
     }
 
+    //Definir filtros por defecto al cargar urls
     async setDefaultFilters() {
         const defaultFilters = await this.urlQueryService.getFilterQueryParams([
             { name: 'page', type: 'number' },
             { name: 'pageSize', type: 'number' },
             { name: 'IdWarehouse', type: 'string' },
-            { name: 'Created', type: 'string' }
+            { name: 'Created', type: 'string' },
+            { name: 'Stock', type: 'number' },
+            { name: 'Price', type: 'number' },
+            { name: 'Description', type: 'string' }
         ]);
     
-        console.log('Default Filters:', defaultFilters); // Log para verificar
-    
         this.productsFilter.setFilters(defaultFilters);
-        
-        // Asegúrate de que los filtros se apliquen después de establecerlos
         await this.getData();
     }
 
@@ -155,7 +146,6 @@ export class CrudComponent implements OnInit {
     confirmDelete() {
         this.deleteProductDialog = false;
         this.productService.deleteProduct(this.product.id!).then(resp => {
-            console.log(resp)
             if (resp) {
                 this.productsPageList.reload();
                 this.showMessage('success', 'Producto eliminado correctamente');

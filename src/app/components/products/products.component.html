@@ -2,6 +2,7 @@
     <div class="col-12">
         <div class="card px-6 py-6">
             <p-toast></p-toast>
+            <!-- Tabla principal y seteo de opciones extraidas del productPageList -->
             <p-table #dt 
                 [value]="productsPageList.page.items" 
                 [(rows)]="productsPageList.rows" 
@@ -22,6 +23,7 @@
                     </div>
                 </ng-template>
                 <ng-template pTemplate="header">
+                    <!-- Mapeo de titulos-->
                     <tr>
                         <ng-container *ngFor="let column of productsPageList.columns">
                             <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
@@ -33,10 +35,12 @@
                             </th>
                         </ng-container>
                     </tr>
+                    <!-- Mapeo de filtros -->
                     <tr>
                         <ng-container *ngFor="let column of productsPageList.columns">
                             <th [style.width]="column.width" *ngIf="column.filterable">
                                 <ng-container>
+                                    <!-- Filtro cuando es numero o texto-->
                                     <p-columnFilter 
                                         *ngIf="column.type=='text'||column.type=='numeric'"
                                         [type]="column.type!" 
@@ -44,6 +48,7 @@
                                         placeholder="Buscar" 
                                         [showMenu]="false">
                                     </p-columnFilter>
+                                    <!-- Filtro para fechas-->
                                     <p-columnFilter 
                                         *ngIf="column.type=='date'" 
                                         [field]="column.field"
@@ -60,6 +65,7 @@
                                             </p-calendar>
                                         </ng-template>
                                     </p-columnFilter>
+                                    <!-- Filtro para seleccionables-->
                                     <p-columnFilter 
                                         *ngIf="column.type=='select'" 
                                         [field]="column.field" 
@@ -82,6 +88,7 @@
                         </ng-container>
                     </tr>
                 </ng-template>
+                <!-- Mapeo de filas de la tabla -->
                 <ng-template pTemplate="body" let-product>
                     <tr>
                         <td>
@@ -118,7 +125,7 @@
                 </ng-template>
             </p-table>
         </div>
-
+        <!-- Ventana de crear/editar -->
         <p-dialog [(visible)]="productDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true"
             class="p-fluid">
             <ng-template pTemplate="content">
@@ -203,7 +210,7 @@
                     (click)="saveProduct()"></button>
             </ng-template>
         </p-dialog>
-
+        <!-- Ventana de aceptación de eliminación -->
         <p-dialog [(visible)]="deleteProductDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
             <div class="flex align-items-center justify-content-center">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>

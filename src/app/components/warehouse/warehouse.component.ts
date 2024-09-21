@@ -37,6 +37,7 @@ export class WarehouseComponent implements OnInit {
         this.warehouseFilter = new FilterHandler();
     }
 
+    //Inicializa datos
     async ngOnInit() {
         this.setTableColumns();
         await this.getData();
@@ -62,41 +63,43 @@ export class WarehouseComponent implements OnInit {
         }
     }
 
+    //Setea las columas y sus propiedades
     setTableColumns() {
-
         const columns: ColumnHeader[] = [
-            { field: 'id', header: 'Id', filterable: true, sortable: true, type: 'text' },
-            { field: 'Name', header: 'Nombre', filterable: true, sortable: true, type: 'text' },
-            { field: 'Description', header: 'Descripción', },
+            { field: 'id', header: 'Id', filterable: false, sortable: false, type: 'text' },
+            { field: 'Name', header: 'Nombre', filterable: true, sortable: false, type: 'text' },
+            { field: 'Description', header: 'Descripción', type: 'text', filterable: true,},
             { field: '', header: 'Acciones', },
         ];
         this.warehousePageList.setColumns(columns); //Setea las columnas al modelo
     }
 
+    //Configuracion de filtros en Url
     configureObserveFilters() {
         this.warehousePageList.observeFilters().subscribe((query) => {
             this.urlQueryService.updateUrlQueryParams(query);
-            const filterParams = ['Id', 'Name', 'Description'];
-            filterParams.forEach((key) => {
-                if (query.hasOwnProperty(key)) this.warehouseFilter.setFilter(key, query[key]);
-            });
         });
     }
 
+    //Definir filtros por defecto al cargar urls
     async setDefaultFilters() {
         const defaultFilters = await this.urlQueryService.getFilterQueryParams([
           { name: 'page', type: 'number' },
           { name: 'pageSize', type: 'number' },
+          { name: 'Name', type: 'string' },
+          { name: 'Description', type: 'string' },
         ]);
         this.warehouseFilter.setFilters(defaultFilters);
-      }
+    }
 
+    //Abir formulario para crear nueva bodega
     openNew() {
         this.warehouse = {};
         this.submitted = false;
         this.warehouseDialog = true;
     }
 
+    //Abrir dialogo de edición
     editWarehouse(warehouse: Warehouse) {
         this.warehouse = { ...warehouse };
         this.warehouseDialog = true;
@@ -107,10 +110,10 @@ export class WarehouseComponent implements OnInit {
         this.warehouse = { ...warehouse };
     }
 
+    //Ventana de confirmación de borrado
     confirmDelete() {
         this.deleteWarehouseDialog = false;
         this.warehouseService.deleteWarehouse(this.warehouse.id!).then(resp => {
-            console.log(resp)
             if (resp) {
                 this.warehousePageList.reload();
                 this.showMessage('success', 'Bodega eliminado correctamente');
@@ -164,7 +167,4 @@ export class WarehouseComponent implements OnInit {
         this.messageService.add({ severity, summary: severity === 'success' ? 'Correcto' : 'Error', detail, life: 3000 });
     }
 
-    onGlobalFilter(table: Table, event: Event) {
-        table.filterGlobal((event.target as HTMLInputElement).value, 'contains');
-    }
 }

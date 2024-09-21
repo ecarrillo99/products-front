@@ -2,6 +2,15 @@
     <div class="col-12">
         <div class="card px-6 py-6">
             <p-toast></p-toast>
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success mr-2"
+                            (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
             <!-- Tabla principal y seteo de opciones extraidas del productPageList -->
             <p-table #dt 
                 [value]="productsPageList.page.items" 

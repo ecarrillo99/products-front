@@ -134,7 +134,9 @@ export class ProductsComponent implements OnInit {
     }
 
     editProduct(product: Product) {
+        console.log(product);
         this.product = { ...product };
+        this.product.created = new Date(this.product.created!);
         this.productDialog = true;
     }
 

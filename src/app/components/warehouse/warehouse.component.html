@@ -2,7 +2,15 @@
     <div class="col-12">
         <div class="card px-6 py-6">
             <p-toast></p-toast>
-            <!-- Tabla pricipal y seteo de configuraciones usando datos de warehouse page list -->
+            <p-toolbar styleClass="mb-4">
+                <ng-template pTemplate="left">
+                    <div class="my-2">
+                        <button pButton pRipple label="Nuevo" icon="pi pi-plus" class="p-button-success mr-2"
+                            (click)="openNew()"></button>
+                    </div>
+                </ng-template>
+            </p-toolbar>
+
             <p-table #dt
                 [value]="warehousePageList.page.items" 
                 [(rows)]="warehousePageList.rows" 
@@ -10,16 +18,14 @@
                 (onLazyLoad)="warehousePageList.next($event)" 
                 [lazyLoadOnInit]="false"
                 [tableStyle]="{ 'min-width': '60rem' }" 
-                [rowsPerPageOptions]="warehousePageList.rowsPerPage" 
+                [rowsPerPageOptions]="warehousePageList.rowsPerPage"
                 [loading]="warehousePageList.loading" 
                 [showCurrentPageReport]="true"
                 currentPageReportTemplate="Mostrando {first} al {last} de {totalRecords} elementos" 
                 [paginator]="true"
                 [first]="warehousePageList.pageCount" 
                 [totalRecords]="warehousePageList.page.totalItems">
-                <!-- Mapeo de columnas -->
                 <ng-template pTemplate="header">
-                    <!-- Mapeo de titulos con opciones de orden o no -->
                     <tr>
                         <ng-container *ngFor="let column of warehousePageList.columns">
                             <th *ngIf="column.sortable" pSortableColumn="{{ column.field }}">
@@ -31,7 +37,6 @@
                             </th>
                         </ng-container>
                     </tr>
-                    <!-- Mapeo de filtros-->
                     <tr>
                         <ng-container *ngFor="let column of warehousePageList.columns">
                             <th *ngIf="column.filterable">
@@ -45,20 +50,22 @@
                         </ng-container>
                     </tr>
                 </ng-template>
-                <!-- Mapeo de filas de las tablas -->
+
+
                 <ng-template pTemplate="body" let-warehouse>
                     <tr>
-                        <td style="width:25%; min-width:10rem;">
+                        <td style="width:25%; min-width:10rem;"><span class="p-column-title">Código</span>
                             {{warehouse.id}}
                         </td>
                         <td style="width:25%; min-width:10rem;">
+                            <span class="p-column-title">Nombre</span>
                             {{warehouse.name}}
                         </td>
                         <td style="width:25%; min-width:10rem;">
+                            <span class="p-column-title">Descripción</span>
                             {{warehouse.description}}
                         </td>
                         <td>
-                            <!-- Opciones -->
                             <div class="flex">
                                 <button pButton pRipple icon="pi pi-pencil"
                                     class="p-button-rounded p-button-success mr-2"
@@ -71,7 +78,7 @@
                 </ng-template>
             </p-table>
         </div>
-        <!-- Formulario de crear/editar-->
+
         <p-dialog [(visible)]="warehouseDialog" [style]="{width: '450px'}" header="Detalles del producto" [modal]="true"
             class="p-fluid">
             <ng-template pTemplate="content">
@@ -98,7 +105,7 @@
                     (click)="saveWarehouse()"></button>
             </ng-template>
         </p-dialog>
-        <!-- Ventana de aceptación de eliminación -->
+
         <p-dialog [(visible)]="deleteWarehouseDialog" header="Confirmar" [modal]="true" [style]="{width:'450px'}">
             <div class="flex align-items-center justify-content-center">
                 <i class="pi pi-exclamation-triangle mr-3" style="font-size: 2rem"></i>

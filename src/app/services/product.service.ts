@@ -19,7 +19,6 @@ export class ProductService extends Service {
             query['Created'] = formattedDate; // Reemplaza la fecha en el objeto query
         }
     
-        console.log("query", query);
         const queryString = new URLSearchParams(query).toString();
         return this.request<PageList<Product[]>>('get', `${Config.URL_SERVICES}${Config.PRODUCTS}?${queryString}`) as Promise<PageList<Product[]>>;
     }
